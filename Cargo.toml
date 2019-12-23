@@ -1,0 +1,9 @@
+[package]
+name = "retrigger"
+version = "0.1.0"
+authors = ["mishazawa <macintoshkrug@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rodio = "0.10.0"
+rand = "0.7.2"
