@@ -33,14 +33,11 @@ fn main() {
     let mut prev_progress = 0;
 
     for (n, slice) in audio.chunks_mut(WINDOW).enumerate() {
-        mcall(&mut random, 1, |mut random| {
+        mcall(&mut random, 9, |mut random| {
             shuffle::<i16>(slice, &mut random);
         });
 
-        mcall(&mut random, 1, |mut random| {
-            shuffle::<i16>(slice, &mut random);
-        });
-
+        crush(slice, random.gen_range(1, 255));
         prev_progress = print_progress(n, progress_len, prev_progress);
     }
 
@@ -55,6 +52,12 @@ fn main() {
 
 fn shuffle<T>(chunk: &mut [T], random: &mut RGen) -> () {
     chunk.shuffle(random);
+}
+
+fn crush(chunk: &mut [i16], depth: u8) -> () {
+    for sample in chunk.iter_mut() {
+        *sample = map_i(bit_crush(*sample, depth), -1., 1., 0., 32767.) as i16;
+    }
 }
 
 fn mcall(random: &mut RGen, threshold: u8, mut f: impl FnMut(&mut RGen) -> ()) -> () {
@@ -79,4 +82,18 @@ fn print_progress(n: usize, progress_len: u32, prev_progress: i8) -> i8 {
         }
         _ => prev_progress,
     }
+}
+
+pub fn bit_crush(val: i16, depth: u8) -> f32 {
+    let amps = 2.0f32.powf(depth as f32);
+    2.0 * ((amps * (0.5 * map_f(val, 0., i16::max_value().into(), -1., 1.) + 0.5)).round() / amps)
+        - 1.0
+}
+
+fn map_f(val: i16, start1: f32, stop1: f32, start2: f32, stop2: f32) -> f32 {
+    start2 + (stop2 - start2) * ((val as f32 - start1) / (stop1 - start1))
+}
+
+fn map_i(val: f32, start1: f32, stop1: f32, start2: f32, stop2: f32) -> f32 {
+    start2 + (stop2 - start2) * ((val - start1) / (stop1 - start1))
 }
