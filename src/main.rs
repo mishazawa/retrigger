@@ -66,17 +66,17 @@ fn mcall(random: &mut RGen, threshold: u8, mut f: impl FnMut(&mut RGen) -> ()) -
 #[allow(dead_code)]
 fn retrigger<T: Copy>(_chunk: &mut [T], _random: &mut RGen) -> () {}
 
-fn calc_progress (n: u32, full: u32) -> i8 {
-  (((n + 1) as f32 / full as f32) * 100.) as i8
+fn calc_progress(n: u32, full: u32) -> i8 {
+    (((n + 1) as f32 / full as f32) * 100.) as i8
 }
 
-fn print_progress (n: usize, progress_len: u32, prev_progress: i8) -> i8{
-  print!("\x1B[2J");
-  match calc_progress(n as u32, progress_len) {
-    p if p != prev_progress => {
-      println!("Progress: {:?}%", calc_progress(n as u32, progress_len));
-      return p;
-    },
-    _ => prev_progress,
-  }
+fn print_progress(n: usize, progress_len: u32, prev_progress: i8) -> i8 {
+    print!("\x1B[2J");
+    match calc_progress(n as u32, progress_len) {
+        p if p != prev_progress => {
+            println!("Progress: {:?}%", calc_progress(n as u32, progress_len));
+            return p;
+        }
+        _ => prev_progress,
+    }
 }
